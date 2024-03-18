@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sindhsupportunit/widgets/LoginResponse.dart';
+import 'package:sindhsupportunit/widgets/Schooldata.dart';
 
 import 'DatabaseHelper.dart';
 import 'SubmitForm.dart';
@@ -89,9 +91,16 @@ class _LoginPageState extends State<LoginPage> {
                     margin: const EdgeInsets.only(top: 15.0),
                     child: ElevatedButton(
                       onPressed: () {
-                              setState(() {
+                        LoginResponse loginResponse = LoginResponse(token: 'your_token', username: 'your_username');
+
+
+                        setState(() {
                                 _isLoading = true;
                               });
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => FormPage(loginResponse:loginResponse)),
+                              );
                               signIn(emailController.text,
                                   passwordController.text);
                             },
@@ -112,10 +121,7 @@ class _LoginPageState extends State<LoginPage> {
 
     var response =
         await http.post(Uri.parse('https://samrsys.rsu-sindh.gov.pk/api/login'), body: data);
-
-    DatabaseHelper dbHelper = DatabaseHelper().initDatabase() as DatabaseHelper;
-    User newUser = User(username: email, password: pass, id: 1);
-    await dbHelper.insertUser(newUser);
+    registerUser(email,pass);
     if (response.statusCode == 200) {
 
 
@@ -138,4 +144,31 @@ class _LoginPageState extends State<LoginPage> {
       print(response.body);
     }
   }
+
+  void registerUser(String username, String password) async {
+    int id = await DatabaseHelper.instance.insertUser({
+      DatabaseHelper.columnName: username,
+      DatabaseHelper.columnPassword: password,
+    });
+    if (id != null) {
+      // Registration successful
+      print('User registered successfully');
+    } else {
+      // Registration failed
+      print('Failed to register user');
+    }
+  }
+
+  void loginUser(String username, String password) async {
+    Map<String, dynamic>? user = await DatabaseHelper.instance.getUser(username);
+    if (user != null && user[DatabaseHelper.columnPassword] == password) {
+      // Login successful
+      print('Login successful');
+    } else {
+      // Login failed
+      print('Login failed');
+    }
+  }
+
+
 }
