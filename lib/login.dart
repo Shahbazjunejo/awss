@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sindhsupportunit/widgets/LoginDataResponse.dart';
 import 'package:sindhsupportunit/widgets/LoginResponse.dart';
 import 'package:sindhsupportunit/widgets/Schooldata.dart';
 
@@ -93,14 +94,13 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         LoginResponse loginResponse = LoginResponse(token: 'your_token', username: 'your_username');
 
-
                         setState(() {
                                 _isLoading = true;
                               });
-                              Navigator.push(
+/*                              Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => FormPage(loginResponse:loginResponse)),
-                              );
+                              );*/
                               signIn(emailController.text,
                                   passwordController.text);
                             },
@@ -121,16 +121,30 @@ class _LoginPageState extends State<LoginPage> {
 
     var response =
         await http.post(Uri.parse('https://samrsys.rsu-sindh.gov.pk/api/login'), body: data);
+
+
+
+
     registerUser(email,pass);
     if (response.statusCode == 200) {
-
-
       jsonResponse = json.decode(response.body);
+
+
+
       if (jsonResponse != null) {
+        Root root = Root.fromJson(json.decode(jsonResponse));
         setState(() {
           _isLoading = false;
         });
-        sharedPreferences.setString("token", jsonResponse['token']);
+//Future<LoginDataResponse> loginDataResponse=fetchLoginData(email, pass) ;
+
+
+
+
+String as=root.accesstoken.toString();
+
+
+     //   sharedPreferences.setString("token", jsonResponse['token']);
         // ignore: use_build_context_synchronously
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
@@ -138,10 +152,14 @@ class _LoginPageState extends State<LoginPage> {
             (Route<dynamic> route) => false);
       }
     } else {
+      _showMyDialog(response.body);
       setState(() {
         _isLoading = false;
       });
       print(response.body);
+
+
+
     }
   }
 
@@ -167,6 +185,57 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       // Login failed
       print('Login failed');
+    }
+  }
+  Future<void> _showMyDialog(String reason) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('AlertDialog Title'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Login Has been Failed'), // Here's a static text.
+                Text('Reason: $reason'), // Here you insert the dynamic string.
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  Future<LoginDataResponse> fetchLoginData(String email, pass) async {
+    Map data = {'email': email, 'password': pass};
+    final response = await http.post(
+        Uri.parse('https://samrsys.rsu-sindh.gov.pk/api/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body:jsonEncode(<String, String>{
+          'email': email,
+          'password': pass,
+        }),
+    );
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON.
+      return LoginDataResponse.fromJson(json.decode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // throw an exception.
+      throw Exception('Failed to load login data');
     }
   }
 

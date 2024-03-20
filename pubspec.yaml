@@ -51,6 +51,7 @@ dev_dependencies:
   flutter_animated_button: ^2.0.3
   shared_preferences: ^2.2.2
   http: ^1.0.1
+  json_serializable: ^6.7.1
 
 
 

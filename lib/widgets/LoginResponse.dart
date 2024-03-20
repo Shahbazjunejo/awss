@@ -4,3 +4,5 @@ class LoginResponse {
 
   LoginResponse({this.token, this.username});
 }
+
+
