@@ -110,13 +110,13 @@ class Root {
     accesstoken = json['access_token'];
   }
 
-  Map<String, dynamic> toJson() {
+/*  Map<String, dynamic> toJson() {
     final Map<String, dynamic> loginDataResponse = Map<String, dynamic>();
     loginDataResponse['status'] = status;
     loginDataResponse['message'] = message;
     loginDataResponse['data'] = loginDataResponse!.toJson();
     loginDataResponse['access_token'] = accesstoken;
     return loginDataResponse;
-  }
+  }*/
 }
 

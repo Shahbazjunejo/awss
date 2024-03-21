@@ -97,10 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                         setState(() {
                                 _isLoading = true;
                               });
-/*                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => FormPage(loginResponse:loginResponse)),
-                              );*/
+
                               signIn(emailController.text,
                                   passwordController.text);
                             },
@@ -125,31 +122,27 @@ class _LoginPageState extends State<LoginPage> {
 
 
 
-    registerUser(email,pass);
+
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
 
 
 
       if (jsonResponse != null) {
-        Root root = Root.fromJson(json.decode(jsonResponse));
+        Root root = Root.fromJson(jsonResponse);
+        registerUser(email,pass,root.accesstoken.toString());
         setState(() {
           _isLoading = false;
         });
+String token=root.accesstoken.toString();
+        //await DatabaseHelper.instance.insertSchoolData(root.data?.name, root.data?.username, root.data?.email,  root.data?.contact, root.data?.cnic, root.data?.address,token);
 //Future<LoginDataResponse> loginDataResponse=fetchLoginData(email, pass) ;
 
+                                      Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => FormPage(loginResponse:root)),
+                              );
 
-
-
-String as=root.accesstoken.toString();
-
-
-     //   sharedPreferences.setString("token", jsonResponse['token']);
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (BuildContext context) => const MainPage()),
-            (Route<dynamic> route) => false);
       }
     } else {
       _showMyDialog(response.body);
@@ -163,10 +156,11 @@ String as=root.accesstoken.toString();
     }
   }
 
-  void registerUser(String username, String password) async {
+  void registerUser(String username, String password,String accessToken) async {
     int id = await DatabaseHelper.instance.insertUser({
       DatabaseHelper.columnName: username,
       DatabaseHelper.columnPassword: password,
+      DatabaseHelper.columnaccessToken: accessToken,
     });
     if (id != null) {
       // Registration successful
