@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -22,9 +23,15 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
+  int _connectionStatus = 0;
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _checkInternet();
+  }
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
@@ -92,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                     margin: const EdgeInsets.only(top: 15.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        LoginResponse loginResponse = LoginResponse(token: 'your_token', username: 'your_username');
+
 
                         setState(() {
                                 _isLoading = true;
@@ -113,6 +120,10 @@ class _LoginPageState extends State<LoginPage> {
 
   signIn(String email, pass) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if(_connectionStatus==0){
+      loginUser(email, pass);
+    }
+
     Map data = {'email': email, 'password': pass};
     var jsonResponse = null;
 
@@ -134,21 +145,30 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-String token=root.accesstoken.toString();
-        //await DatabaseHelper.instance.insertSchoolData(root.data?.name, root.data?.username, root.data?.email,  root.data?.contact, root.data?.cnic, root.data?.address,token);
+        String tokensent=root.accesstoken.toString();
+       // LoginResponse loginResponse = LoginResponse(Map<String, dynamic>? {  root.data?.name, root.data?.username, root.data?.email,root.data?.contact, root.data?.cnic,tokensent  } );
+
+await DatabaseHelper.instance.insertSchoolData(root.data?.name, root.data?.username, root.data?.email,  root.data?.contact, root.data?.cnic, root.data?.address,tokensent);
 //Future<LoginDataResponse> loginDataResponse=fetchLoginData(email, pass) ;
+
+        Map<String, dynamic>? userinformation = await DatabaseHelper.instance.getInformationData(email);
+
+        LoginResponse loginResponse= await LoginResponse.fromJson(userinformation);
+
 
                                       Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => FormPage(loginResponse:root)),
+                                MaterialPageRoute(builder: (context) => FormPage(loginResponse:loginResponse)),
                               );
 
       }
     } else {
       _showMyDialog(response.body);
+      loginUser(email, pass);
       setState(() {
         _isLoading = false;
       });
+
       print(response.body);
 
 
@@ -173,14 +193,21 @@ String token=root.accesstoken.toString();
 
   void loginUser(String username, String password) async {
     Map<String, dynamic>? user = await DatabaseHelper.instance.getUser(username);
+    Map<String, dynamic>? userinformation = await DatabaseHelper.instance.getInformationData(username);
+    LoginResponse loginResponse= LoginResponse.fromJson(userinformation);
     if (user != null && user[DatabaseHelper.columnPassword] == password) {
       // Login successful
-      print('Login successful');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FormPage(loginResponse: loginResponse,)),
+      );
     } else {
       // Login failed
       print('Login failed');
     }
   }
+
+
   Future<void> _showMyDialog(String reason) async {
     return showDialog<void>(
       context: context,
@@ -233,5 +260,15 @@ String token=root.accesstoken.toString();
     }
   }
 
+  Future<void> _checkInternet() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.mobile) {
+      setState(() => _connectionStatus = 1);
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      setState(() => _connectionStatus = 1);
+    } else {
+      setState(() => _connectionStatus = 0);
+    }
+  }
 
 }

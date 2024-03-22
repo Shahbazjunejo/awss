@@ -7,7 +7,7 @@ import '../DatabaseHelper.dart';
 import 'LoginDataResponse.dart';
 import 'LoginResponse.dart';
 class FormPage extends StatelessWidget {
-  final Root loginResponse;
+  final LoginResponse loginResponse;
   FormPage({Key? key, required this.loginResponse}) : super(key: key);
 int stdid=0;
 
@@ -29,19 +29,19 @@ int stdid=0;
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          buildTextField1(loginResponse.data?.name),
+          buildTextField1(loginResponse.name),
           SizedBox(height: 20,),
-          buildTextField2(loginResponse.data?.username),
+          buildTextField2(loginResponse.username),
           SizedBox(height: 20,),
-          buildTextField3(loginResponse.data?.email),
+          buildTextField3(loginResponse.email),
         //  SizedBox(height: 20,),
         //  buildTextField4(loginResponse.data?.semiscode as String?),
           SizedBox(height: 20,),
-          buildTextField5(loginResponse.data?.contact),
+          buildTextField5(loginResponse.contact),
           SizedBox(height: 20,),
-          buildTextField6(loginResponse.data?.cnic),
+          buildTextField6(loginResponse.cnic),
           SizedBox(height: 20,),
-          buildTextField7(loginResponse.data?.address),
+          buildTextField7(loginResponse.address),
 
         ],
       ),
