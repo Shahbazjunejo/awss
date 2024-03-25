@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sindhsupportunit/widgets/custom_text_input.dart';
 
+import 'DatabaseHelper.dart';
+
 class SubmitForm extends StatefulWidget {
   @override
   _FormScreenState createState() => _FormScreenState();
@@ -17,19 +19,23 @@ class _FormScreenState extends State<SubmitForm> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      String field1Value = _textFieldController1.text;
-      String field2Value = _textFieldController2.text;
-      String field3Value = _textFieldController3.text;
-      String field4Value = _textFieldController4.text;
-      String field5Value = _textFieldController5.text;
+      String nameValue = _textFieldController1.text;
+      String contactValue = _textFieldController2.text;
+      String fathernameValue = _textFieldController3.text;
+      String father_cnicValue = _textFieldController4.text;
+      String emailValue = _textFieldController5.text;
+
+      await DatabaseHelper.instance.insertStudent(nameValue, contactValue , fathernameValue, father_cnicValue, emailValue);
+
+
 
       // Send data to API
-      try {
+/*      try {
         var response = await http.post(
           Uri.parse('your_api_endpoint'),
           body: {
-            'field1': field1Value,
-            'field2': field2Value,
+            'name': field1Value,
+            'contact': field2Value,
             'field3': field3Value,
             'field4': field4Value,
             'field5': field5Value,
@@ -45,7 +51,7 @@ class _FormScreenState extends State<SubmitForm> {
         }
       } catch (error) {
         print('Network error: $error');
-      }
+      }*/
     }
   }
 
@@ -81,16 +87,16 @@ class _FormScreenState extends State<SubmitForm> {
               ),
               CustomTextInput(
                 textEditController: _textFieldController2,
-                hintTextString: 'Enter Email',
-                inputType: InputType.Email,
+                hintTextString: 'Enter Contact',
+                inputType: InputType.Number,
                 enableBorder: true,
                 cornerRadius: 48.0,
-                maxLength: 24,
+                maxLength: 12,
               ),
               CustomTextInput(
                 textEditController:_textFieldController3,
-                hintTextString: 'Enter Password',
-                inputType: InputType.Password,
+                hintTextString: 'Father Name',
+                inputType: InputType.Default,
                 enableBorder: true,
                 cornerRadius: 48.0,
                 maxLength: 16,
@@ -98,19 +104,19 @@ class _FormScreenState extends State<SubmitForm> {
               ),
               CustomTextInput(
                 textEditController:_textFieldController4,
-                hintTextString: 'Enter Number',
+                hintTextString: 'Father Cnic',
                 inputType: InputType.Number,
                 enableBorder: true,
                 cornerRadius: 48.0,
-                maxLength: 10,
+                maxLength: 20,
               ),
             CustomTextInput(
               textEditController:_textFieldController5,
-              hintTextString: 'Enter Card Number',
-              inputType: InputType.PaymentCard,
+              hintTextString: 'Enter Email',
+              inputType: InputType.Default,
               enableBorder: true,
               cornerRadius: 48.0,
-              maxLength: 10,
+              maxLength: 30,
             ),
               SizedBox(height: 20),
               Container(

@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sindhsupportunit/widgets/SyncDataScreen.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static final _databaseName = "SindhSupportUnitprogram";
-  static final _databaseVersion = 3;
+  static final _databaseVersion = 5;
 
   static final table = 'login_table';
   static final columnId = 'id';
@@ -15,9 +16,11 @@ class DatabaseHelper {
   static final columnPassword = 'password';
   static final columnaccessToken = 'access_token';
   static final columnemail = 'Email';
+  static final columnsync = 'sync';
   static final columncontact = 'Contact';
   static final columncnic = 'Cnic';
-
+  static final columnfatherName='fathername';
+  static final columnfathercnic='fathercnic';
 
   static final tablestudent = 'students';
   static final tableinformationdata = 'informationData';
@@ -60,9 +63,12 @@ class DatabaseHelper {
       CREATE TABLE  IF NOT EXISTS $tablestudent (
         $columnId INTEGER PRIMARY KEY,
         $columnName TEXT ,
-        $columnAge INTEGER ,
-        $columnGrade TEXT  ,
-        $columnAddress TEXT 
+        $columncontact TEXt ,
+        $columnfatherName TEXT  ,
+        $columnfathercnic TEXT,
+        $columnemail TEXT,
+        $columnsync TEXT
+         
       )
     ''');
 
@@ -106,16 +112,34 @@ class DatabaseHelper {
     }
 
 
-  Future<int> insertStudent(String name, int age, String grade, String address) async {
+  Future<int> insertStudent(String name, String contact, String fathername, String fathercnic,String email) async {
     Database? db = await instance.database;
     Map<String, dynamic> row = {
       columnName: name,
-      columnAge: age,
-      columnGrade: grade,
-      columnAddress: address,
+      columncontact: contact,
+      columnfatherName: fathername,
+      columnfathercnic: fathercnic,
+      columnemail: email
     };
     return await db?.insert(tablestudent, row)??0;
   }
+
+  Future<List<StudentData>> getItems() async {
+    final Database? db = await database;
+    final List<Map<String, dynamic>>? maps = await db?.query('students');
+    return List.generate(maps!.length, (i) {
+      return  StudentData(
+      //  id: maps[i]['id'],
+        name: maps[i]['username'] ?? '', // Provide default value if null
+        contact: maps[i]['Contact'] ?? '', // Provide default value if null
+        fathername: maps[i]['fathername'] ?? '', // Provide default value if null
+        fatherCNIC: maps[i]['fathercnic'] ?? '', // Provide default value if null
+        email: maps[i]['Email'] ?? '',
+      );
+    });
+  }
+
+
 
   Future<int> insertSchoolData(String? name,String? username,String? email, String?  contact, String? cnic, String? address,String? accessToken) async {
     Database? db = await instance.database;

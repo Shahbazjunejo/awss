@@ -203,6 +203,10 @@ await DatabaseHelper.instance.insertSchoolData(root.data?.name, root.data?.usern
       );
     } else {
       // Login failed
+      _showMyDialog("Wrong username or password");
+      setState(() {
+        _isLoading = false;
+      });
       print('Login failed');
     }
   }

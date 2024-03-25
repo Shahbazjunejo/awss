@@ -4,8 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../DatabaseHelper.dart';
+import '../SubmitForm.dart';
 import 'LoginDataResponse.dart';
 import 'LoginResponse.dart';
+import 'package:flutter_animated_button/flutter_animated_button.dart';
+
+import 'SyncDataScreen.dart';
 class FormPage extends StatelessWidget {
   final LoginResponse loginResponse;
   FormPage({Key? key, required this.loginResponse}) : super(key: key);
@@ -13,12 +17,66 @@ int stdid=0;
 
   @override
   Widget build(BuildContext context) {
-      schoolData();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Form Page'),
+        title: Text('School Information'),
       ),
-      body:  buildTextFields(),
+     body: SingleChildScrollView(
+    child:  Column(
+    children: [
+      buildTextFields(),
+         AnimatedButton(
+             height: 70,
+             width: 200,
+             text: 'Register Student',
+             isReverse: true,
+             selectedTextColor: Colors.black,
+             transitionType: TransitionType.LEFT_TO_RIGHT,
+             backgroundColor: Colors.black,
+             borderColor: Colors.white,
+             borderRadius: 0,
+             borderWidth: 2, onPress: () {
+           Navigator.push(
+             context,
+             MaterialPageRoute(builder: (context) => SubmitForm()),
+           );}
+         ),
+
+       AnimatedButton(
+       height: 70,
+       width: 200,
+       text: 'SUBMIT',
+       isReverse: true,
+       selectedTextColor: Colors.black,
+       transitionType: TransitionType.LEFT_TO_RIGHT,
+       backgroundColor: Colors.black,
+       borderColor: Colors.white,
+       borderRadius: 0,
+       borderWidth: 2, onPress: () {  },
+     ),
+      AnimatedButton(
+        height: 70,
+        width: 200,
+        text: 'Sync Data',
+        isReverse: true,
+        selectedTextColor: Colors.black,
+        transitionType: TransitionType.LEFT_TO_RIGHT,
+        backgroundColor: Colors.black,
+        borderColor: Colors.white,
+        borderRadius: 0,
+        borderWidth: 2, onPress: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SyncDataScreen()),
+        );
+
+
+      },
+      )
+
+    ],
+    ),
+    )
     );
   }
 
@@ -42,6 +100,12 @@ int stdid=0;
           buildTextField6(loginResponse.cnic),
           SizedBox(height: 20,),
           buildTextField7(loginResponse.address),
+/*
+          SizedBox(height: 20,),
+          buttonSubmit(),
+          SizedBox(height: 20,),
+          buttonSync()
+*/
 
         ],
       ),
@@ -200,14 +264,59 @@ int stdid=0;
   );
 
 
+/*Widget buttonSubmit()=>  AnimatedButton(
+  height: 70,
+  width: 200,
+  text: 'SUBMIT',
+  isReverse: true,
+  selectedTextColor: Colors.black,
+  transitionType: TransitionType.LEFT_TO_RIGHT,
+  backgroundColor: Colors.black,
+  borderColor: Colors.white,
+  borderRadius: 0,
+  borderWidth: 2, onPress: () {  },
+  );
+ Widget buttonSync()=> AnimatedButton(
+  height: 70,
+  width: 200,
+  text: 'SyncData',
+  isReverse: true,
+  selectedTextColor: Colors.black,
+  transitionType: TransitionType.LEFT_TO_RIGHT,
+  backgroundColor: Colors.black,
+  borderColor: Colors.white,
+  borderRadius: 0,
+  borderWidth: 2, onPress: () {
 
 
-///int studentId = await DatabaseHelper.instance.insertStudent('John', 20, 'A', '123 Main St');
+  },
+  );*/
 
-schoolData()async{
-  int studentId = await DatabaseHelper.instance.insertStudent('John', 20, 'A', '123 Main St');
-  stdid=studentId;
+
+/*  Widget buttonRegister()=> AnimatedButton(
+    height: 70,
+    width: 200,
+    text: 'Register Student',
+    isReverse: true,
+    selectedTextColor: Colors.black,
+    transitionType: TransitionType.LEFT_TO_RIGHT,
+    backgroundColor: Colors.black,
+    borderColor: Colors.white,
+    borderRadius: 0,
+    borderWidth: 2, onPress: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SubmitForm()),
+    );
+
+  },
+  );*/
+
+  ///int studentId = await DatabaseHelper.instance.insertStudent('John', 20, 'A', '123 Main St');
+
+
+
+
 }
 
 
-}

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:sindhsupportunit/SubmitForm.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -37,8 +38,10 @@ class HomeScreen extends StatelessWidget {
               borderColor: Colors.white,
               borderRadius: 0,
               borderWidth: 2, onPress: () {
-
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SubmitForm()),
+              );
             },
             ),
           ]
