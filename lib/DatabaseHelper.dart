@@ -161,12 +161,30 @@ class DatabaseHelper {
     return await db?.insert(table, row)??0;
   }
 
+  Future<int?> deletelogin() async {
+    final Database? db = await database;
+    return await db?.delete(
+      table,
+/*      where: 'id = ?',
+      whereArgs: [id],*/
+    );
+  }
+
+
   Future<Map<String, dynamic>?> getUser(String username) async {
     Database? db = await instance.database;
     List<Map<String, dynamic>> result = await db?.query(table,
         where: '$columnName = ?', whereArgs: [username])??[];
     return result.isNotEmpty ? result.first : null;
   }
+
+  Future<Map<String, dynamic>?> getUseraccesstoken(int id) async {
+    Database? db = await instance.database;
+    List<Map<String, dynamic>> result = await db?.query(table,
+        where: '$columnId= ?', whereArgs: [id])??[];
+    return result.isNotEmpty ? result.first : null;
+  }
+
 
   Future<Map<String, dynamic>?> getInformationData(String username) async {
     Database? db = await instance.database;

@@ -27,8 +27,13 @@ class _FormScreenState extends State<SubmitForm> {
 
       await DatabaseHelper.instance.insertStudent(nameValue, contactValue , fathernameValue, father_cnicValue, emailValue);
 
+      _textFieldController1.clear();
+      _textFieldController2.clear();
+      _textFieldController3.clear();
+      _textFieldController4.clear();
+      _textFieldController5.clear();
 
-
+      _showMyDialog(context, 'Data Has been submitted');
       // Send data to API
 /*      try {
         var response = await http.post(
@@ -108,7 +113,7 @@ class _FormScreenState extends State<SubmitForm> {
                 inputType: InputType.Number,
                 enableBorder: true,
                 cornerRadius: 48.0,
-                maxLength: 20,
+                maxLength: 15,
               ),
             CustomTextInput(
               textEditController:_textFieldController5,
@@ -138,6 +143,33 @@ class _FormScreenState extends State<SubmitForm> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _showMyDialog(BuildContext context,String reason) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('AlertDialog Title'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[ // Here's a static text.
+                Text(reason), // Here you insert the dynamic string.
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,7 +1,9 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 
 import '../DatabaseHelper.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 // Define a model class to represent your data
 class StudentData {
 
@@ -31,10 +33,71 @@ class BackendService {
     return studentData;
   }
 
-  static void sendData( StudentData studentData) {
-    // Send data to the backend
-    print('Sending data: ${studentData.name}, ${studentData.contact}, ${studentData.email}');
-    // Implement your logic to send data to the backend here
+
+
+
+ static void sendDataWithToken(BuildContext context,StudentData studentData,String usertoken) async {
+    // Your data to be sent in the body
+    Map<String, dynamic> data = {
+      'name': studentData.name,
+      'contact': studentData.contact,
+      'fathername': studentData.fathername,
+      'father_cnic': studentData.fatherCNIC,
+      'email': studentData.email,
+    };
+
+
+
+
+
+    // Your Bearer token
+    String token = usertoken;
+
+    // URL to send the request to
+    String url = 'https://samrsys.rsu-sindh.gov.pk/api/saveDummyData';
+
+    // Convert data to JSON format
+    String jsonData = json.encode(data);
+
+    // Send HTTP POST request with data in the body and Bearer token in headers
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonData,
+      );
+
+      // Check if the request was successful (status code 200)
+      if (response.statusCode == 200) {
+        print('Data sent successfully');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Success'),
+              content: Text('Data sent successfully'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        print('Response: ${response.body}');
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+        print('Response: ${response.body}');
+      }
+    } catch (error) {
+      print('Error sending data: $error');
+    }
   }
 }
 
@@ -99,6 +162,10 @@ class _DatabaseListViewState extends State<SyncDataScreen> {
       ),
     );
   }
+
+
+
+
 }
 class ItemWidget extends StatelessWidget {
   final  StudentData item;
@@ -121,15 +188,65 @@ class ItemWidget extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: Icon(Icons.send),
-          onPressed: () {
-            // Perform action when the button is pressed
-            // For example, send data to the backend
-            BackendService.sendData(item);
+          onPressed: () async {
+            Map<String, dynamic>? user = await DatabaseHelper.instance.getUseraccesstoken(1);
+            var connectivityResult = await Connectivity().checkConnectivity();
+            if (connectivityResult == ConnectivityResult.mobile ||connectivityResult == ConnectivityResult.wifi){
+           BackendService.sendDataWithToken(context,item,  user?[DatabaseHelper.columnaccessToken]);
+
+
+            }else{
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('INTERNET'),
+                    content: Text('INTERNET IS NOT CONNECTED'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+            }
           },
         ),
       ),
     );
   }
 
+
+  Future<void> _showMyDialog(BuildContext context,String reason) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('AlertDialog Title'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[ // Here's a static text.
+                Text(reason), // Here you insert the dynamic string.
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 }

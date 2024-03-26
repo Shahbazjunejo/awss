@@ -141,6 +141,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (jsonResponse != null) {
         Root root = Root.fromJson(jsonResponse);
+        deleteUser();
         registerUser(email,pass,root.accesstoken.toString());
         setState(() {
           _isLoading = false;
@@ -189,6 +190,18 @@ await DatabaseHelper.instance.insertSchoolData(root.data?.name, root.data?.usern
       // Registration failed
       print('Failed to register user');
     }
+  }
+
+  Future<void> deleteUser() async {
+
+    int? rowsAffected = await DatabaseHelper.instance.deletelogin();
+
+    if (rowsAffected! > 0) {
+      print('Item deleted successfully');
+    } else {
+      print('No item found with the provided ID');
+    }
+
   }
 
   void loginUser(String username, String password) async {

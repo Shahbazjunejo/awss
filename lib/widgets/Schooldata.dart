@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../DatabaseHelper.dart';
 import '../SubmitForm.dart';
+import '../login.dart';
 import 'LoginDataResponse.dart';
 import 'LoginResponse.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
@@ -45,14 +46,21 @@ int stdid=0;
        AnimatedButton(
        height: 70,
        width: 200,
-       text: 'SUBMIT',
+       text: 'LOG OUT',
        isReverse: true,
        selectedTextColor: Colors.black,
        transitionType: TransitionType.LEFT_TO_RIGHT,
        backgroundColor: Colors.black,
        borderColor: Colors.white,
        borderRadius: 0,
-       borderWidth: 2, onPress: () {  },
+       borderWidth: 2, onPress: () {
+         Navigator.push(
+           context,
+           MaterialPageRoute(builder: (context) =>LoginPage()),
+         );
+
+
+       },
      ),
       AnimatedButton(
         height: 70,
